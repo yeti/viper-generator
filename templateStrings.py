@@ -154,6 +154,34 @@ class AppDependencies {
 }
 
 '''
+newDependencies = '''
+///////////////////////////// Copy And Paste The Following Output Into AppDependencies.swift ///////////////////
+
+{% for module in modules %}
+    // MARK: - {{ module.name.capitalize() }} Module
+    let {{ module.name.lower() }}Presenter = {{ module.name.capitalize() }}Presenter()
+    let {{ module.name.lower() }}Interactor = {{ module.name.capitalize() }}Interactor()
+    let {{ module.name.lower() }}DataManager = {{ module.name.capitalize() }}DataManager()
+
+    {{ module.name.lower() }}Interactor.presenter = {{ module.name.lower() }}Presenter
+    {{ module.name.lower() }}Interactor.dataManager = {{ module.name.lower() }}DataManager
+    {{ module.name.lower() }}Presenter.interactor = {{ module.name.lower() }}Interactor
+    {{ module.name.lower() }}Presenter.wireframe = {{ module.name.lower() }}Wireframe
+    {{ module.name.lower() }}DataManager.interactor = {{ module.name.lower() }}Interactor
+    //TODO: Set the DataMangaers DataStore
+
+    // Instantiate wireframes
+    {{ module.name.lower() }}Wireframe.presenter = {{ module.name.lower() }}Presenter
+    {{ module.name.lower() }}Wireframe.rootWireFrame = rootWire
+
+    //TODO: Configure {{ module.name.capitalize() }} DataManager 
+    {% endfor %}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+'''
+
 rootWireframe = '''
 //
 //  RootWireFrame.swift

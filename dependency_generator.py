@@ -19,6 +19,9 @@ def checkValidInput():
 	if len(sys.argv) <= 1:
 		print "JSON file not provided\n"
 		exit(1) 
+def printDependencies(modules):
+	template = Template(templateStrings.newDependencies)
+	print "\n{}\n".format(template.render(modules=modules))
 
 # returns a list of Module tuples from given JSON
 def getModulesFromJson(json):
@@ -46,7 +49,10 @@ def cap(strVal):
 ## Get the current working directory OR user provided path
 def cwd():
 	if len(sys.argv) >= 3:
-		return sys.argv[2]
+		if sys.argv[2] == "--existing":
+			return os.getcwd()
+		else:
+			return sys.argv[2] 
 	else:
 		return os.getcwd()
 # get the given module's directory
@@ -55,7 +61,7 @@ def moduleDirectory(module):
 #check if this directory exists, if not, create it
 def checkDirectory(path):
 	try:
-		os.mkdir(path)
+		os.mkdir(path,777)
 	except OSError as exception:
 		if exception.errno != errno.EEXIST:
 			pass
@@ -72,6 +78,7 @@ def getJSON():
 # create all required directories for project
 def createDirectories(modules):
 	currDir = cwd()
+	checkDirectory(currDir)
 	checkDirectory("{}/Modules".format(currDir))
 	checkDirectory("{}/Common".format(currDir))
 	checkDirectory("{}/Common/Models".format(currDir))
@@ -133,7 +140,10 @@ def main():
 	jsonInput = getJSON() # get json from system args -> exits if not valid JSON
 	allModules = getModulesFromJson(jsonInput)
 	createDirectories(allModules) # all needed directories
-	createAppDependencies(allModules) # dependencies file
+	if "--existing" in sys.argv:
+		printDependencies(allModules)
+	else:
+		createAppDependencies(allModules) # dependencies file
 	createRootWireframe() # root Wireframe
 
 	### Create All Module Files
