@@ -21,9 +21,10 @@ Run the following command
 sudo python dependency_generator.py ./file.json /path/to/desired/directory --existing
 ```
 where:
-1. ./file.json is the path to a json file with attributes outline below
+
+1. /file.json is the path to a json file with attributes outline below
 2. /path/to/desired/directory is the directory in which the generated files will be saved (Optional)
-3  The '--existing' flag is added when adding a new module to an existing project
+3.  The '--existing' flag is added when adding a new module to an existing project
 
 ### JSON File
 The JSON file should outline the modules to be created in the script. For each module, you must supply a module name and the list of views in that module. The JSON file should 
