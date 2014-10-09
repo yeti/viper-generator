@@ -1,4 +1,4 @@
-# view Generator
+#### dependencies
 import json
 from collections import namedtuple
 import sys
@@ -9,7 +9,16 @@ import templateStrings
 import errno
 from sys import stdin
 from jinja2 import Template
-# methods
+
+#### globals
+Module = namedtuple('Module',['name', 'views']) # Access attributes with dot syntax
+
+
+#### Functions
+def checkValidInput():
+	if len(sys.argv) <= 1:
+		print "JSON file not provided\n"
+		exit(1) 
 
 # returns a list of Module tuples from given JSON
 def getModulesFromJson(json):
@@ -19,26 +28,46 @@ def getModulesFromJson(json):
 	  modArray.append(val)
 	return modArray
 #end
+def fileCount(modules):
+	baseFiles = len(modules) * 4
+	appDependencies = 1
+	storyboard = 1
+	rootVC = 1
+	viewCount = 0
+	for module in modules:
+		viewCount += len(module.views)
+	return baseFiles + appDependencies + viewCount + rootVC + storyboard
 # capitalize a string, to be used in map
 def cap(strVal):
 	return strVal.capitalize()
 
+## Get the current working directory OR user provided path
 def cwd():
 	if len(sys.argv) >= 3:
 		return sys.argv[2]
 	else:
 		return os.getcwd()
-
+# get the given module's directory
 def moduleDirectory(module):
 	return "{}/Modules/{}".format(cwd(),module.name)
-
+#check if this directory exists, if not, create it
 def checkDirectory(path):
 	try:
 		os.mkdir(path)
 	except OSError as exception:
 		if exception.errno != errno.EEXIST:
 			pass
-
+# get JSON from Command Line
+def getJSON():
+	jsonFilename = sys.argv[1]
+	with open(jsonFilename, 'r') as file:		
+		try:
+			parsedJson = json.loads(file.read())
+		except:
+			print "Not valid JSON input"
+			exit(1)
+	return parsedJson
+# create all required directories for project
 def createDirectories(modules):
 	currDir = cwd()
 	checkDirectory("{}/Modules".format(currDir))
@@ -49,7 +78,32 @@ def createDirectories(modules):
 		checkDirectory("{}/Modules/{}".format(currDir,module.name))
 		for view in module.views:
 			checkDirectory("{}/Modules/{}/ViewControllers".format(currDir,module.name))
+# create base module file 
+def createModuleFile(module,fileName,template):
+	directory = moduleDirectory(module)
+	fileString = "{}/{}.swift".format(directory,fileName)
+	with open(fileString, 'w+') as file:
+			template = Template(template)
+			file.write(template.render(name=module.name,viewList=module.views)) 
+def createGenericFile(directory,fileName,template):
+	fileString = "{}/{}".format(directory,fileName)
+	with open(fileString, 'w+') as file:
+			template = Template(template)
+			file.write(template.render())
+# Create Presenter for this module
+def createPresenter(module):
+	createModuleFile(module,"{}Presenter".format(module.name.capitalize()),templateStrings.presenter)
+# Create Interactor for this module
+def createInteractor(module):
+	createModuleFile(module,"{}Interactor".format(module.name.capitalize()),templateStrings.interactor) 
+# Create wireframe from this module
+def createWireframe(module):
+	createModuleFile(module,"{}Wireframe".format(module.name.capitalize()),templateStrings.wireframe)
+# Create DataManager from this Module
+def createDataManager(module):
+	createModuleFile(module,"{}DataManager".format(module.name.capitalize()),templateStrings.datamanager)
 
+# Create ViewController.swift file for each of the module's views.
 def createViews(module):
 	directory = "{}/ViewControllers".format(moduleDirectory(module))
 	for view in module.views:
@@ -58,79 +112,38 @@ def createViews(module):
 			template = Template(templateStrings.viewControllerTemplate)
 			file.write(template.render(name=module.name,view=view))
 	# end for
-def createPresenter(module):
-	directory = moduleDirectory(module)
-	fileString = "{}/{}Presenter.swift".format(directory,module.name.capitalize())
-	with open(fileString, 'w+') as file:
-			template = Template(templateStrings.presenterTemplate)
-			file.write(template.render(name=module.name,viewList=module.views)) 
-# end create presenter
-
-def createInteractor(module):
-	directory = moduleDirectory(module)
-	fileString = "{}/{}Interactor.swift".format(directory,module.name.capitalize())
-	with open(fileString, 'w+') as file:
-			template = Template(templateStrings.interactorTemplate)
-			file.write(template.render(name=module.name,viewList=module.views)) 
-def createWireframe(module):
-	directory = moduleDirectory(module)
-	fileString = "{}/{}Wireframe.swift".format(directory,module.name.capitalize())
-	with open(fileString, 'w+') as file:
-			template = Template(templateStrings.wireframeTemplate)
-			file.write(template.render(name=module.name,viewList=module.views))
-def createDataManager(module):
-	directory = moduleDirectory(module)
-	fileString = "{}/{}DataManager.swift".format(directory,module.name.capitalize())
-	with open(fileString, 'w+') as file:
-			template = Template(templateStrings.datamanagerTemplate)
-			file.write(template.render(name=module.name,viewList=module.views))
-
-
+# Create App Dependencies File
 def createAppDependencies(modules):
 	fileString = "AppDependencies.swift"  
 	with open(fileString, 'w+') as file:
 			template = Template(templateStrings.dependenciesTemplate)
 			file.write(template.render(modules=modules))
+# Generate the Root Wire frame
 def createRootWireframe():
-	fileString = "{}/Common/RootWireFrame.swift".format(cwd())  
-	with open(fileString, 'w+') as file:
-			template = Template(templateStrings.rootWireframe)
-			file.write(template.render())
+	createGenericFile("{}/Common".format(cwd()),"RootWireFrame.swift",templateStrings.rootWireframe)
+# create the storyboard file
 def createStoryboard(module):
-	directory = moduleDirectory(module)
-	fileString = "{}/{}.storyboard".format(directory,module.name.capitalize())
-	with open(fileString, 'w+') as file:
-			template = Template(templateStrings.storyboard)
-			file.write(template.render(name=module.name,viewList=module.views))
-def getJSON():
-	jsonFilename = sys.argv[1]
-	with open(jsonFilename, 'r') as file:		
-		parsedJson = json.loads(file.read())
-	return parsedJson
+	createGenericFile(moduleDirectory(module),"{}.storyboard".format(module.name.capitalize()),templateStrings.storyboard)
 
+#### Main ####
+def main():
+	checkValidInput() # right now just checks number of arguments
+	jsonInput = getJSON() # get json from system args -> exits if not valid JSON
+	allModules = getModulesFromJson(jsonInput)
+	createDirectories(allModules) # all needed directories
+	createAppDependencies(allModules) # dependencies file
+	createRootWireframe() # root Wireframe
 
-# start script
-
-
-jsonInput = getJSON()
-# create Named Tuple
-Module = namedtuple('Module',['name', 'views'])
-allModules = getModulesFromJson(jsonInput)
-createDirectories(allModules)
-createAppDependencies(allModules)
-createRootWireframe()
-
-### Create Modules
-for module in allModules:
-	createViews(module)
-	createPresenter(module)
-	createInteractor(module)
-	createWireframe(module)
-	createDataManager(module)
-	createStoryboard(module)
-# end 
-
-
-
-
+	### Create All Module Files
+	for module in allModules:
+		createViews(module)
+		createPresenter(module)
+		createInteractor(module)
+		createWireframe(module)
+		createDataManager(module)
+		createStoryboard(module)
+	# end 
+	print("{} Files Created.".format(fileCount(allModules)))
+if __name__ == "__main__":
+    main()
 

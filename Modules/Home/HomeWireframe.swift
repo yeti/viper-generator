@@ -13,7 +13,9 @@ class HomeWireframe: NSObject {
   var homeListViewController : HomeListViewController?
   
 
-  var mapWireFrame : HomeWireframe?
-  
+  func homeStoryboard() -> UIStoryboard{
+    let storyboard = UIStoryboard(name: "Home", bundle: NSBundle.mainBundle())
+    return storyboard
+  }
 
 }

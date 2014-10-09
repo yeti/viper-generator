@@ -25,7 +25,7 @@ class {{ name.capitalize() }}{{ view.capitalize() }}ViewController: UIViewContro
 
 }
 '''
-presenterTemplate = '''
+presenter = '''
 //
 //  {{ name }}Presenter.swift
 //
@@ -43,7 +43,7 @@ class {{ name }}Presenter: NSObject {
 
 }
 '''
-interactorTemplate = '''
+interactor = '''
 //
 //  {{ name }}Interactor.swift
 //
@@ -59,7 +59,7 @@ class {{ name.capitalize() }}Interactor: NSObject {
 
 '''
 
-wireframeTemplate = '''
+wireframe = '''
 //
 //  {{name}}Wireframe.swift
 //
@@ -74,8 +74,8 @@ class {{ name.capitalize() }}Wireframe: NSObject {
   var {{ name.lower() }}{{ view.capitalize() }}ViewController : {{ name.capitalize() }}{{ view.capitalize() }}ViewController?
   {% endfor %}
 
-  func {{ name.lower() }}StoryBoard() -> UIStoryboard{
-    let storyboard = UIStoryboard(name: {{ name.capitalize() }}, bundle: NSBundle.mainBundle())
+  func {{ name.lower() }}Storyboard() -> UIStoryboard{
+    let storyboard = UIStoryboard(name: "{{ name.capitalize() }}", bundle: NSBundle.mainBundle())
     return storyboard
   }
 
@@ -83,7 +83,7 @@ class {{ name.capitalize() }}Wireframe: NSObject {
 
 '''
 
-datamanagerTemplate = '''
+datamanager = '''
 //
 //  {{ name }}DataManager.swift
 //
@@ -193,14 +193,3 @@ storyboard = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         </scene>
     </scenes>
 </document>'''
-
-
-
-
-
-
-
-
-
-
-
