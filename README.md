@@ -44,6 +44,7 @@ For each module, the script will output:
 - 1 Datamanger
 - 1 Storyboard
 - X View controllers
+
 Where 'X' is the number of views associated with that module.
 The script will also generate an AppDependencies file that binds these files to each other.
 Along with this, the script will create a RootWireFrame in the 'Common' directory.
