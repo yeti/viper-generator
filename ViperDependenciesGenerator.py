@@ -7,6 +7,7 @@ import os.path
 import string
 import templateStrings
 import errno
+from sys import stdin
 from jinja2 import Template
 # methods
 
@@ -23,7 +24,10 @@ def cap(strVal):
 	return strVal.capitalize()
 
 def cwd():
-	return os.getcwd()
+	if len(sys.argv) >= 3:
+		return sys.argv[2]
+	else:
+		return os.getcwd()
 
 def moduleDirectory(module):
 	return "{}/Modules/{}".format(cwd(),module.name)
@@ -36,18 +40,20 @@ def checkDirectory(path):
 			pass
 
 def createDirectories(modules):
-	cwd = os.getcwd()
-	checkDirectory("{}/Modules".format(cwd))
-	checkDirectory("{}/Common".format(cwd))
+	currDir = cwd()
+	checkDirectory("{}/Modules".format(currDir))
+	checkDirectory("{}/Common".format(currDir))
+	checkDirectory("{}/Common/Models".format(currDir))
+	checkDirectory("{}/Common/DataStore".format(currDir))
 	for module in modules:
-		checkDirectory("{}/Modules/{}".format(cwd,module.name))
+		checkDirectory("{}/Modules/{}".format(currDir,module.name))
 		for view in module.views:
-			checkDirectory("{}/Modules/{}/ViewControllers".format(cwd,module.name))
+			checkDirectory("{}/Modules/{}/ViewControllers".format(currDir,module.name))
 
 def createViews(module):
 	directory = "{}/ViewControllers".format(moduleDirectory(module))
 	for view in module.views:
-		fileString = "{}/{}ViewController.swift".format(directory, view.capitalize())
+		fileString = "{}/{}{}ViewController.swift".format(directory, module.name.capitalize() ,view.capitalize())
 		with open(fileString, 'w+') as file:
 			template = Template(templateStrings.viewControllerTemplate)
 			file.write(template.render(name=module.name,view=view))
@@ -90,12 +96,26 @@ def createRootWireframe():
 	with open(fileString, 'w+') as file:
 			template = Template(templateStrings.rootWireframe)
 			file.write(template.render())
+def createStoryboard(module):
+	directory = moduleDirectory(module)
+	fileString = "{}/{}.storyboard".format(directory,module.name.capitalize())
+	with open(fileString, 'w+') as file:
+			template = Template(templateStrings.storyboard)
+			file.write(template.render(name=module.name,viewList=module.views))
+def getJSON():
+	jsonFilename = sys.argv[1]
+	with open(jsonFilename, 'r') as file:		
+		parsedJson = json.loads(file.read())
+	return parsedJson
 
-# using fake json now, will use file input in the future
-mockJSON = json.loads('[{"ModuleName":"Home","Views" : ["Visited","AddVisit"]},{"ModuleName":"Map","Views" : ["MapHome","NewMap"]}]')
+
+# start script
+
+
+jsonInput = getJSON()
 # create Named Tuple
 Module = namedtuple('Module',['name', 'views'])
-allModules = getModulesFromJson(mockJSON)
+allModules = getModulesFromJson(jsonInput)
 createDirectories(allModules)
 createAppDependencies(allModules)
 createRootWireframe()
@@ -107,6 +127,7 @@ for module in allModules:
 	createInteractor(module)
 	createWireframe(module)
 	createDataManager(module)
+	createStoryboard(module)
 # end 
 
 

@@ -8,6 +8,6 @@ import UIKit
 class HomeInteractor: NSObject {
   
   var presenter : HomePresenter?
-  var dataStore : HomeDataStore?
+  var dataManager : HomeDataManager?
   
 }

@@ -5,8 +5,8 @@
 
 import UIKit
 
-class HomeInteractor: NSObject {
+class HomeDataManager: NSObject {
   
-  var presenter : HomePresenter?
+  var interactor : HomeInteractor?
   
 }

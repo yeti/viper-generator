@@ -10,9 +10,7 @@ class HomeWireframe: NSObject {
   var presenter : HomePresenter?
 
   
-  var visitedViewController : VisitedViewController?
-  
-  var addvisitViewController : AddVisitViewController?
+  var homeListViewController : HomeListViewController?
   
 
   var mapWireFrame : HomeWireframe?

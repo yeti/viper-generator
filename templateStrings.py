@@ -1,12 +1,12 @@
 viewControllerTemplate = '''
 //
-//  {{ view }}ViewController.swift
+//  {{ name.capitalize() }}{{ view.capitalize() }}ViewController.swift
 //
 //
 
 import UIKit
 
-class {{ name.capitalize() }}ViewController: UIViewController{
+class {{ name.capitalize() }}{{ view.capitalize() }}ViewController: UIViewController{
   
   var presenter : {{ name }}Presenter?
   
@@ -37,7 +37,7 @@ class {{ name }}Presenter: NSObject {
   
   var wireframe : {{ name }}Wireframe?
   {% for view in viewList%}
-  var {{ view.lower() }}ViewController : {{ view }}ViewController?
+  var {{ name.lower() }}{{ view.capitalize() }}ViewController : {{ name.capitalize() }}{{ view.capitalize() }}ViewController?
   {% endfor %}
   var interactor : {{ name }}Interactor?
 
@@ -53,7 +53,7 @@ import UIKit
 class {{ name.capitalize() }}Interactor: NSObject {
   
   var presenter : {{ name }}Presenter?
-  var dataStore : {{ name }}DataStore?
+  var dataManager : {{ name }}DataManager?
   
 }
 
@@ -71,11 +71,13 @@ class {{ name.capitalize() }}Wireframe: NSObject {
   var presenter : {{name}}Presenter?
 
   {% for view in viewList%}
-  var {{ view.lower() }}ViewController : {{ view }}ViewController?
+  var {{ name.lower() }}{{ view.capitalize() }}ViewController : {{ name.capitalize() }}{{ view.capitalize() }}ViewController?
   {% endfor %}
 
-  var mapWireFrame : {{name}}Wireframe?
-  
+  func {{ name.lower() }}StoryBoard() -> UIStoryboard{
+    let storyboard = UIStoryboard(name: {{ name.capitalize() }}, bundle: NSBundle.mainBundle())
+    return storyboard
+  }
 
 }
 
@@ -88,9 +90,9 @@ datamanagerTemplate = '''
 
 import UIKit
 
-class {{ name.capitalize() }}Interactor: NSObject {
+class {{ name.capitalize() }}DataManager: NSObject {
   
-  var presenter : {{ name }}Presenter?
+  var interactor : {{ name }}Interactor?
   
 }
 
@@ -137,7 +139,7 @@ class AppDependencies {
     {{ module.name.lower() }}Interactor.presenter = {{ module.name.lower() }}Presenter
     {{ module.name.lower() }}Interactor.dataManager = {{ module.name.lower() }}DataManager
     {{ module.name.lower() }}Presenter.interactor = {{ module.name.lower() }}Interactor
-    {{ module.name.lower() }}Presenter.wireframe = {{ module.name.lower() }}WireFrame
+    {{ module.name.lower() }}Presenter.wireframe = {{ module.name.lower() }}Wireframe
     {{ module.name.lower() }}DataManager.interactor = {{ module.name.lower() }}Interactor
     //TODO: Set the DataMangaers DataStore
 
@@ -165,6 +167,32 @@ class RootWireFrame: NSObject, UITabBarDelegate {
 }
 
 '''
+## Watch out for white space if modifying
+storyboard = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+</document>'''
 
 
 

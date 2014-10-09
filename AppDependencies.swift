@@ -10,7 +10,7 @@ class AppDependencies {
   
 	  var homeWireframe = HomeWireframe()
   
-	  var mapWireframe = MapWireframe()
+	  var captureWireframe = CaptureWireframe()
   
   
   
@@ -41,7 +41,7 @@ class AppDependencies {
     homeInteractor.presenter = homePresenter
     homeInteractor.dataManager = homeDataManager
     homePresenter.interactor = homeInteractor
-    homePresenter.wireframe = homeWireFrame
+    homePresenter.wireframe = homeWireframe
     homeDataManager.interactor = homeInteractor
     //TODO: Set the DataMangaers DataStore
 
@@ -51,23 +51,23 @@ class AppDependencies {
 
     //TODO: Configure Home DataManager 
     
-    // MARK: - Map Module
-    let mapPresenter = MapPresenter()
-    let mapInteractor = MapInteractor()
-    let mapDataManager = MapDataManager()
+    // MARK: - Capture Module
+    let capturePresenter = CapturePresenter()
+    let captureInteractor = CaptureInteractor()
+    let captureDataManager = CaptureDataManager()
 
-    mapInteractor.presenter = mapPresenter
-    mapInteractor.dataManager = mapDataManager
-    mapPresenter.interactor = mapInteractor
-    mapPresenter.wireframe = mapWireFrame
-    mapDataManager.interactor = mapInteractor
+    captureInteractor.presenter = capturePresenter
+    captureInteractor.dataManager = captureDataManager
+    capturePresenter.interactor = captureInteractor
+    capturePresenter.wireframe = captureWireframe
+    captureDataManager.interactor = captureInteractor
     //TODO: Set the DataMangaers DataStore
 
     // Instantiate wireframes
-    mapWireframe.presenter = mapPresenter
-    mapWireframe.rootWireFrame = rootWire
+    captureWireframe.presenter = capturePresenter
+    captureWireframe.rootWireFrame = rootWire
 
-    //TODO: Configure Map DataManager 
+    //TODO: Configure Capture DataManager 
     
   }
 
