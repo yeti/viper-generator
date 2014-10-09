@@ -1,7 +1,7 @@
 iOS Dependency Generator (swift)
 ========================
 
-Script to generate models  and dependencies for Yeti's take on [VIPER](http://www.objc.io/issue-13/viper.html) architecture
+Script to generate models  and dependencies for Yeti's take on [VIPER](http://www.objc.io/issue-13/viper.html) architecture. For an example of how this architecture can be used. Take a look at the [demo project](https://github.com/yeti/searching-for-yeti-viper-demo)
 
 
 ## Installation
