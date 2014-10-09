@@ -28,6 +28,8 @@ def getModulesFromJson(json):
 	  modArray.append(val)
 	return modArray
 #end
+
+# Indicator for how many files were created
 def fileCount(modules):
 	baseFiles = len(modules) * 4
 	appDependencies = 1
@@ -144,6 +146,6 @@ def main():
 		createStoryboard(module)
 	# end 
 	print("{} Files Created.".format(fileCount(allModules)))
+
 if __name__ == "__main__":
     main()
-

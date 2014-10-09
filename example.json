@@ -1,0 +1,4 @@
+[
+{"ModuleName" : "Home", "Views" : ["List"]},
+ {"ModuleName" : "Capture", "Views" : ["Home"]}
+ ]
