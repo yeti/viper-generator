@@ -144,7 +144,7 @@ def main():
 		printDependencies(allModules)
 	else:
 		createAppDependencies(allModules) # dependencies file
-	createRootWireframe() # root Wireframe
+		createRootWireframe() # root Wireframe
 
 	### Create All Module Files
 	for module in allModules:

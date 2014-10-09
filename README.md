@@ -18,11 +18,12 @@ pip install Jinja2
 ## Basic Usage
 Run the following command
 ```
-sudo python dependency_generator.py ./file.json /path/to/desired/directory
+sudo python dependency_generator.py ./file.json /path/to/desired/directory --existing
 ```
 where:
 1. ./file.json is the path to a json file with attributes outline below
-2. /path/to/desired/directory is the directory in which the generated files will be saved
+2. /path/to/desired/directory is the directory in which the generated files will be saved (Optional)
+3  The '--existing' flag is added when adding a new module to an existing project
 
 ### JSON File
 The JSON file should outline the modules to be created in the script. For each module, you must supply a module name and the list of views in that module. The JSON file should 
@@ -42,9 +43,13 @@ For each module, the script will output:
 - 1 Datamanger
 - 1 Storyboard
 - X View controllers
-Where X is the number of views associated with that module.
+Where 'X' is the number of views associated with that module.
 The script will also generate an AppDependencies file that binds these files to each other.
 Along with this, the script will create a RootWireFrame in the 'Common' directory.
 When these files are created, simply drag and drop them into your current Xcode project.
+
+## Adding to an Existing Project
+Sometimes you may want to add more modules to an existing script after already running the generator.
+In these scenarios, simply create a fresh JSON file for the new module(s) and run the script with the `--existing' flag. This will create the new Models which can be dragged into your Xcode project. It will also print dependency code which can be copy and pasting into an existing AppDependencies file.
 
 

@@ -149,6 +149,9 @@ class AppDependencies {
 
     //TODO: Configure {{ module.name.capitalize() }} DataManager 
     {% endfor %}
+
+    //MARK: - Add Additional Module dependecies here
+    ////////////////////////////////////////////////
   }
 
 }
