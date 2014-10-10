@@ -21,7 +21,7 @@ def checkValidInput():
 		exit(1) 
 def printDependencies(modules):
 	template = Template(templateStrings.newDependencies)
-	print "\n{}\n".format(template.render(modules=modules))
+	print "\n{}\n".format(file.write(template.render(lower__modules=lower_module_names(modules) ,upper_modules=upper_module_names(modules) )))
 
 # returns a list of Module tuples from given JSON
 def getModulesFromJson(json):
@@ -31,7 +31,25 @@ def getModulesFromJson(json):
 	  modArray.append(val)
 	return modArray
 #end
-
+def upcase_first_letter(s):
+    return s[0].upper() + s[1:]
+def lowercase_first_letter(s):
+	return s[0].lower() + s[1:]
+def uppercase_views(views):
+	upper_views = []
+	for view in views:
+		upper_views.append(upcase_first_letter(view))
+	return upper_views
+def lower_module_names(modules):
+	lower_mods = []
+	for mod in modules:
+		lower_mods.append(lowercase_first_letter(mod.name))
+	return lower_mods
+def upper_module_names(modules):
+	upper_mods = []
+	for mod in modules:
+		upper_mods.append(upcase_first_letter(mod.name))
+	return upper_mods
 # Indicator for how many files were created
 def fileCount(modules):
 	baseFiles = len(modules) * 4
@@ -58,10 +76,17 @@ def cwd():
 # get the given module's directory
 def moduleDirectory(module):
 	return "{}/Modules/{}".format(cwd(),module.name)
+def change_permissions_recursive(path, mode):
+    for root, dirs, files in os.walk(path, topdown=False):
+        for dir in dirs:
+            os.chmod(dir, mode)
+        for file in files:
+            os.chmod(file, mode)
 #check if this directory exists, if not, create it
 def checkDirectory(path):
 	try:
-		os.mkdir(path,777)
+		os.mkdir(path)
+		change_permissions_recursive(path,777)
 	except OSError as exception:
 		if exception.errno != errno.EEXIST:
 			pass
@@ -84,16 +109,16 @@ def createDirectories(modules):
 	checkDirectory("{}/Common/Models".format(currDir))
 	checkDirectory("{}/Common/DataStore".format(currDir))
 	for module in modules:
-		checkDirectory("{}/Modules/{}".format(currDir,module.name))
+		checkDirectory("{}/Modules/{}".format(currDir,upcase_first_letter(module.name)))
 		for view in module.views:
-			checkDirectory("{}/Modules/{}/ViewControllers".format(currDir,module.name))
+			checkDirectory("{}/Modules/{}/ViewControllers".format(currDir,upcase_first_letter(module.name)))
 # create base module file 
 def createModuleFile(module,fileName,template):
 	directory = moduleDirectory(module)
 	fileString = "{}/{}.swift".format(directory,fileName)
 	with open(fileString, 'w+') as file:
 			template = Template(template)
-			file.write(template.render(name=module.name,viewList=module.views)) 
+			file.write(template.render(upper_name=upcase_first_letter(module.name),lower_name=lowercase_first_letter(module.name), upper_views=uppercase_views(module.views))) 
 def createGenericFile(directory,fileName,template):
 	fileString = "{}/{}".format(directory,fileName)
 	with open(fileString, 'w+') as file:
@@ -116,17 +141,17 @@ def createDataManager(module):
 def createViews(module):
 	directory = "{}/ViewControllers".format(moduleDirectory(module))
 	for view in module.views:
-		fileString = "{}/{}{}ViewController.swift".format(directory, module.name.capitalize() ,view.capitalize())
+		fileString = "{}/{}{}ViewController.swift".format(directory, upcase_first_letter(module.name) ,upcase_first_letter(view))
 		with open(fileString, 'w+') as file:
 			template = Template(templateStrings.viewControllerTemplate)
-			file.write(template.render(name=module.name,view=view))
+			file.write(template.render(upper_name=upcase_first_letter(module.name),upper_view=upcase_first_letter(view)))
 	# end for
 # Create App Dependencies File
 def createAppDependencies(modules):
 	fileString = "AppDependencies.swift"  
 	with open(fileString, 'w+') as file:
 			template = Template(templateStrings.dependenciesTemplate)
-			file.write(template.render(modules=modules))
+			file.write(template.render(lower_modules=lower_module_names(modules) ,upper_modules=upper_module_names(modules)))
 # Generate the Root Wire frame
 def createRootWireframe():
 	createGenericFile("{}/Common".format(cwd()),"RootWireFrame.swift",templateStrings.rootWireframe)

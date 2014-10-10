@@ -1,14 +1,14 @@
 viewControllerTemplate = '''
 //
-//  {{ name.capitalize() }}{{ view.capitalize() }}ViewController.swift
+//  {{ upper_name }}{{ upper_view }}ViewController.swift
 //
 //
 
 import UIKit
 
-class {{ name.capitalize() }}{{ view.capitalize() }}ViewController: UIViewController{
+class {{ upper_name }}{{ upper_view }}ViewController: UIViewController{
   
-  var presenter : {{ name }}Presenter?
+  var presenter : {{ upper_name }}Presenter?
   
   override func viewDidLoad() {
       super.viewDidLoad()
@@ -27,33 +27,33 @@ class {{ name.capitalize() }}{{ view.capitalize() }}ViewController: UIViewContro
 '''
 presenter = '''
 //
-//  {{ name }}Presenter.swift
+//  {{ upper_name }}Presenter.swift
 //
 //
 
 import UIKit
 
-class {{ name }}Presenter: NSObject {
+class {{ upper_name }}Presenter: NSObject {
   
-  var wireframe : {{ name }}Wireframe?
-  {% for view in viewList%}
-  var {{ name.lower() }}{{ view.capitalize() }}ViewController : {{ name.capitalize() }}{{ view.capitalize() }}ViewController?
+  var wireframe : {{ upper_name }}Wireframe?
+  {% for view in upper_views %}
+  var {{ lower_name }}{{ view }}ViewController : {{ upper_name }}{{ view }}ViewController?
   {% endfor %}
-  var interactor : {{ name }}Interactor?
+  var interactor : {{ upper_name }}Interactor?
 
 }
 '''
 interactor = '''
 //
-//  {{ name }}Interactor.swift
+//  {{ upper_name }}Interactor.swift
 //
 
 import UIKit
 
-class {{ name.capitalize() }}Interactor: NSObject {
+class {{ upper_name }}Interactor: NSObject {
   
-  var presenter : {{ name }}Presenter?
-  var dataManager : {{ name }}DataManager?
+  var presenter : {{ upper_name }}Presenter?
+  var dataManager : {{ upper_name }}DataManager?
   
 }
 
@@ -61,21 +61,21 @@ class {{ name.capitalize() }}Interactor: NSObject {
 
 wireframe = '''
 //
-//  {{name}}Wireframe.swift
+//  {{ upper_name }}Wireframe.swift
 //
 
 import UIKit
 
-class {{ name.capitalize() }}Wireframe: NSObject {
+class {{ upper_name }}Wireframe: NSObject {
   var rootWireFrame : RootWireFrame?
-  var presenter : {{name}}Presenter?
+  var presenter : {{ upper_name }}Presenter?
 
-  {% for view in viewList%}
-  var {{ name.lower() }}{{ view.capitalize() }}ViewController : {{ name.capitalize() }}{{ view.capitalize() }}ViewController?
+  {% for view in upper_views %}
+  var {{ lower_name }}{{ view }}ViewController : {{ upper_name }}{{ view }}ViewController?
   {% endfor %}
 
-  func {{ name.lower() }}Storyboard() -> UIStoryboard{
-    let storyboard = UIStoryboard(name: "{{ name.capitalize() }}", bundle: NSBundle.mainBundle())
+  func {{ lower_name }}Storyboard() -> UIStoryboard{
+    let storyboard = UIStoryboard(name: "{{ upper_name }}", bundle: NSBundle.mainBundle())
     return storyboard
   }
 
@@ -85,14 +85,14 @@ class {{ name.capitalize() }}Wireframe: NSObject {
 
 datamanager = '''
 //
-//  {{ name }}DataManager.swift
+//  {{ upper_name }}DataManager.swift
 //
 
 import UIKit
 
-class {{ name.capitalize() }}DataManager: NSObject {
+class {{ upper_name }}DataManager: NSObject {
   
-  var interactor : {{ name }}Interactor?
+  var interactor : {{ upper_name }}Interactor?
   
 }
 
@@ -107,9 +107,13 @@ import UIKit
 
 class AppDependencies {
   
-  {% for module in modules %}
-	  var {{ module.name.lower() }}Wireframe = {{module.name.capitalize() }}Wireframe()
+ 
+  {% for module in lower_modules %}
+   {% set modloop = loop %}
+	  var {{ module }}Wireframe = {{ upper_modules[modloop.index - 1] }}Wireframe()
   {% endfor %}
+
+  //MARK: - Add aditional wireframes here
   
   
   init() {
@@ -129,25 +133,28 @@ class AppDependencies {
 
     //Data Store
     //TODO: Create DataStore
+    //
 
-    {% for module in modules %}
-    // MARK: - {{ module.name.capitalize() }} Module
-    let {{ module.name.lower() }}Presenter = {{ module.name.capitalize() }}Presenter()
-    let {{ module.name.lower() }}Interactor = {{ module.name.capitalize() }}Interactor()
-    let {{ module.name.lower() }}DataManager = {{ module.name.capitalize() }}DataManager()
+    {% for module in lower_modules %}
+     {% set modloop = loop %}
 
-    {{ module.name.lower() }}Interactor.presenter = {{ module.name.lower() }}Presenter
-    {{ module.name.lower() }}Interactor.dataManager = {{ module.name.lower() }}DataManager
-    {{ module.name.lower() }}Presenter.interactor = {{ module.name.lower() }}Interactor
-    {{ module.name.lower() }}Presenter.wireframe = {{ module.name.lower() }}Wireframe
-    {{ module.name.lower() }}DataManager.interactor = {{ module.name.lower() }}Interactor
+    // MARK: - {{ upper_modules[modloop.index - 1] }} Module
+    let {{ module }}Presenter = {{ upper_modules[modloop.index - 1] }}Presenter()
+    let {{ module }}Interactor = {{ upper_modules[modloop.index - 1] }}Interactor()
+    let {{ module }}DataManager = {{ upper_modules[modloop.index - 1] }}DataManager()
+
+    {{  module }}Interactor.presenter = {{ module }}Presenter
+    {{  module }}Interactor.dataManager = {{ module }}DataManager
+    {{  module }}Presenter.interactor = {{ module }}Interactor
+    {{  module }}Presenter.wireframe = {{ module}}Wireframe
+    {{  module }}DataManager.interactor = {{ module }}Interactor
     //TODO: Set the DataMangaers DataStore
 
     // Instantiate wireframes
-    {{ module.name.lower() }}Wireframe.presenter = {{ module.name.lower() }}Presenter
-    {{ module.name.lower() }}Wireframe.rootWireFrame = rootWire
+    {{  module }}Wireframe.presenter = {{ module }}Presenter
+    {{  module }}Wireframe.rootWireFrame = rootWire
 
-    //TODO: Configure {{ module.name.capitalize() }} DataManager 
+    //TODO: Configure {{ upper_modules[modloop.index - 1]  }} DataManager 
     {% endfor %}
 
     //MARK: - Add Additional Module dependecies here
@@ -157,28 +164,49 @@ class AppDependencies {
 }
 
 '''
+
 newDependencies = '''
 ///////////////////////////// Copy And Paste The Following Output Into AppDependencies.swift ///////////////////
 
-{% for module in modules %}
-    // MARK: - {{ module.name.capitalize() }} Module
-    let {{ module.name.lower() }}Presenter = {{ module.name.capitalize() }}Presenter()
-    let {{ module.name.lower() }}Interactor = {{ module.name.capitalize() }}Interactor()
-    let {{ module.name.lower() }}DataManager = {{ module.name.capitalize() }}DataManager()
+///// Set the following as instance variables /////////
+ {% for module in lower_modules %}
+   {% set modloop = loop %}
+	  var {{ module }}Wireframe = {{ upper_modules[modloop.index - 1] }}Wireframe()
+  {% endfor %}
 
-    {{ module.name.lower() }}Interactor.presenter = {{ module.name.lower() }}Presenter
-    {{ module.name.lower() }}Interactor.dataManager = {{ module.name.lower() }}DataManager
-    {{ module.name.lower() }}Presenter.interactor = {{ module.name.lower() }}Interactor
-    {{ module.name.lower() }}Presenter.wireframe = {{ module.name.lower() }}Wireframe
-    {{ module.name.lower() }}DataManager.interactor = {{ module.name.lower() }}Interactor
+////////////////////////////////////////////////////////
+
+
+
+
+
+//////// Place the following into configureDependencies() ///////////////////////////////
+
+
+ {% for module in lower_modules %}
+     {% set modloop = loop %}
+
+    // MARK: - {{ upper_modules[modloop.index - 1] }} Module
+    let {{ module }}Presenter = {{ upper_modules[modloop.index - 1] }}Presenter()
+    let {{ module }}Interactor = {{ upper_modules[modloop.index - 1] }}Interactor()
+    let {{ module }}DataManager = {{ upper_modules[modloop.index - 1] }}DataManager()
+
+    {{  module }}Interactor.presenter = {{ module }}Presenter
+    {{  module }}Interactor.dataManager = {{ module }}DataManager
+    {{  module }}Presenter.interactor = {{ module }}Interactor
+    {{  module }}Presenter.wireframe = {{ module}}Wireframe
+    {{  module }}DataManager.interactor = {{ module }}Interactor
     //TODO: Set the DataMangaers DataStore
 
     // Instantiate wireframes
-    {{ module.name.lower() }}Wireframe.presenter = {{ module.name.lower() }}Presenter
-    {{ module.name.lower() }}Wireframe.rootWireFrame = rootWire
+    {{  module }}Wireframe.presenter = {{ module }}Presenter
+    {{  module }}Wireframe.rootWireFrame = rootWire
 
-    //TODO: Configure {{ module.name.capitalize() }} DataManager 
+    //TODO: Configure {{ upper_modules[modloop.index - 1]  }} DataManager 
     {% endfor %}
+
+    //MARK: - Add Additional Module dependecies here
+    ////////////////////////////////////////////////
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
