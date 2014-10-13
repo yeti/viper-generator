@@ -126,16 +126,16 @@ def createGenericFile(directory,fileName,template):
 			file.write(template.render())
 # Create Presenter for this module
 def createPresenter(module):
-	createModuleFile(module,"{}Presenter".format(module.name.capitalize()),templateStrings.presenter)
+	createModuleFile(module,"{}Presenter".format(upcase_first_letter(module.name)),templateStrings.presenter)
 # Create Interactor for this module
 def createInteractor(module):
-	createModuleFile(module,"{}Interactor".format(module.name.capitalize()),templateStrings.interactor) 
+	createModuleFile(module,"{}Interactor".format(upcase_first_letter(module.name)),templateStrings.interactor) 
 # Create wireframe from this module
 def createWireframe(module):
-	createModuleFile(module,"{}Wireframe".format(module.name.capitalize()),templateStrings.wireframe)
+	createModuleFile(module,"{}Wireframe".format(upcase_first_letter(module.name)),templateStrings.wireframe)
 # Create DataManager from this Module
 def createDataManager(module):
-	createModuleFile(module,"{}DataManager".format(module.name.capitalize()),templateStrings.datamanager)
+	createModuleFile(module,"{}DataManager".format(upcase_first_letter(module.name)),templateStrings.datamanager)
 
 # Create ViewController.swift file for each of the module's views.
 def createViews(module):
@@ -148,7 +148,7 @@ def createViews(module):
 	# end for
 # Create App Dependencies File
 def createAppDependencies(modules):
-	fileString = "AppDependencies.swift"  
+	fileString = "{}AppDependencies.swift".format(cwd())  
 	with open(fileString, 'w+') as file:
 			template = Template(templateStrings.dependenciesTemplate)
 			file.write(template.render(lower_modules=lower_module_names(modules) ,upper_modules=upper_module_names(modules)))
