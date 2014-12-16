@@ -31,8 +31,14 @@ The JSON file should outline the modules to be created in the script. For each m
 consist of a list of dictionaries. Each dictionary contains a "ModuleName" and an Array of Views. For example:
 ```
 [
-{"ModuleName" : "Home", "Views" : ["List","Friends"]},
-{"ModuleName" : "Map", "Views" : ["Visited"]}
+    {
+        "ModuleName": "Home", 
+        "Views": ["List", "Friends"]
+    },
+    {   
+        "ModuleName": "Map", 
+        "Views" : ["Visited"]
+    }
 ]
 
 ```
@@ -41,7 +47,6 @@ For each module, the script will output:
 - 1 Presenter
 - 1 Interactor
 - 1 Wireframe
-- 1 Datamanger
 - 1 Storyboard
 - X View controllers
 
