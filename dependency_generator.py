@@ -1,186 +1,212 @@
-#### dependencies
 import json
 from collections import namedtuple
 import sys
 import os
 import os.path
-import string
-import templateStrings
+import templates
 import errno
-from sys import stdin
 from jinja2 import Template
 
-#### Globals
-Module = namedtuple('Module',['name', 'views']) # Access attributes with dot syntax
+# Globals
+Module = namedtuple('Module', ['name', 'views'])  # Access attributes with dot syntax
 
 
-#### Functions
-def checkValidInput():
-	if len(sys.argv) <= 1:
-		print "JSON file not provided\n"
-		exit(1) 
-def printDependencies(modules):
-	template = Template(templateStrings.newDependencies)
-	print "\n{}\n".format(file.write(template.render(lower__modules=lower_module_names(modules) ,upper_modules=upper_module_names(modules) )))
+# Functions
+def check_valid_input():
+    if len(sys.argv) <= 1:
+        print "JSON file not provided\n"
+        exit(1)
+
+
+def print_dependencies(modules):
+    template = Template(templates.new_dependencies)
+    print "\n{}\n".format(file.write(
+        template.render(lower__modules=lower_module_names(modules), upper_modules=upper_module_names(modules))))
+
 
 # returns a list of Module tuples from given JSON
-def getModulesFromJson(json):
-	modArray = []
-	for mod in json:
-	  val = Module(name=mod["ModuleName"],views=mod["Views"])
-	  modArray.append(val)
-	return modArray
-#end
-def upcase_first_letter(s):
-    return s[0].upper() + s[1:]
-def lowercase_first_letter(s):
-	return s[0].lower() + s[1:]
-def uppercase_views(views):
-	upper_views = []
-	for view in views:
-		upper_views.append(upcase_first_letter(view))
-	return upper_views
-def lower_module_names(modules):
-	lower_mods = []
-	for mod in modules:
-		lower_mods.append(lowercase_first_letter(mod.name))
-	return lower_mods
-def upper_module_names(modules):
-	upper_mods = []
-	for mod in modules:
-		upper_mods.append(upcase_first_letter(mod.name))
-	return upper_mods
-# Indicator for how many files were created
-def fileCount(modules):
-	baseFiles = len(modules) * 4
-	appDependencies = 1
-	storyboard = 1
-	rootVC = 1
-	viewCount = 0
-	for module in modules:
-		viewCount += len(module.views)
-	return baseFiles + appDependencies + viewCount + rootVC + storyboard
-# capitalize a string, to be used in map
-def cap(strVal):
-	return strVal.capitalize()
+def get_modules_from_json(json):
+    mod_array = []
+    for mod in json:
+        val = Module(name=mod["ModuleName"], views=mod["Views"])
+        mod_array.append(val)
+    return mod_array
 
-## Get the current working directory OR user provided path
+
+def uppercase_first_letter(s):
+    return s[0].upper() + s[1:]
+
+
+def lowercase_first_letter(s):
+    return s[0].lower() + s[1:]
+
+
+def uppercase_views(views):
+    return [uppercase_first_letter(view) for view in views]
+
+
+def lower_module_names(modules):
+    return [lowercase_first_letter(module.name) for module in modules]
+
+
+def upper_module_names(modules):
+    return [uppercase_first_letter(module.name) for module in modules]
+
+
+# Indicator for how many files were created
+def file_count(modules):
+    base_files = len(modules) * 3
+    app_dependencies = 1
+    storyboard = 1
+    root_view_controller = 1
+    view_count = 0
+    for module in modules:
+        view_count += len(module.views)
+    return base_files + app_dependencies + view_count + root_view_controller + storyboard
+
+
+# Get the current working directory OR user provided path
 def cwd():
-	if len(sys.argv) >= 3:
-		if sys.argv[2] == "--existing":
-			return os.getcwd()
-		else:
-			return sys.argv[2] 
-	else:
-		return os.getcwd()
+    if len(sys.argv) >= 3:
+        if sys.argv[2] == "--existing":
+            return os.getcwd()
+        else:
+            return sys.argv[2]
+    else:
+        return os.getcwd()
+
+
 # get the given module's directory
-def moduleDirectory(module):
-	return "{}/Modules/{}".format(cwd(),module.name)
+def module_directory(module):
+    return "{}/Modules/{}".format(cwd(), module.name)
+
+
 def change_permissions_recursive(path, mode):
     for root, dirs, files in os.walk(path, topdown=False):
         for dir in dirs:
             os.chmod(dir, mode)
         for file in files:
             os.chmod(file, mode)
-#check if this directory exists, if not, create it
-def checkDirectory(path):
-	try:
-		os.mkdir(path)
-		change_permissions_recursive(path,777)
-	except OSError as exception:
-		if exception.errno != errno.EEXIST:
-			pass
+
+
+# check if this directory exists, if not, create it
+def check_directory(path):
+    try:
+        os.mkdir(path)
+        change_permissions_recursive(path, 777)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            pass
+
+
 # get JSON from Command Line
-def getJSON():
-	jsonFilename = sys.argv[1]
-	with open(jsonFilename, 'r') as file:		
-		try:
-			parsedJson = json.loads(file.read())
-		except:
-			print "Not valid JSON input"
-			exit(1)
-	return parsedJson
+def get_json():
+    json_filename = sys.argv[1]
+    with open(json_filename, 'r') as json_file:
+        parsed_json = json.loads(json_file.read())
+    return parsed_json
+
+
 # create all required directories for project
-def createDirectories(modules):
-	currDir = cwd()
-	checkDirectory(currDir)
-	checkDirectory("{}/Modules".format(currDir))
-	checkDirectory("{}/Common".format(currDir))
-	checkDirectory("{}/Common/Models".format(currDir))
-	checkDirectory("{}/Common/DataStore".format(currDir))
-	for module in modules:
-		checkDirectory("{}/Modules/{}".format(currDir,upcase_first_letter(module.name)))
-		for view in module.views:
-			checkDirectory("{}/Modules/{}/ViewControllers".format(currDir,upcase_first_letter(module.name)))
-# create base module file 
-def createModuleFile(module,fileName,template):
-	directory = moduleDirectory(module)
-	fileString = "{}/{}.swift".format(directory,fileName)
-	with open(fileString, 'w+') as file:
-			template = Template(template)
-			file.write(template.render(upper_name=upcase_first_letter(module.name),lower_name=lowercase_first_letter(module.name), upper_views=uppercase_views(module.views))) 
-def createGenericFile(directory,fileName,template):
-	fileString = "{}/{}".format(directory,fileName)
-	with open(fileString, 'w+') as file:
-			template = Template(template)
-			file.write(template.render())
+def create_directories(modules):
+    current_dir = cwd()
+    check_directory(current_dir)
+    check_directory("{}/Modules".format(current_dir))
+    check_directory("{}/Common".format(current_dir))
+    check_directory("{}/Common/Models".format(current_dir))
+    for module in modules:
+        check_directory("{}/Modules/{}".format(current_dir, uppercase_first_letter(module.name)))
+        check_directory("{}/Modules/{}/ViewControllers".format(current_dir, uppercase_first_letter(module.name)))
+
+
+# create base module file
+def create_module_file(module, file_name, template):
+    directory = module_directory(module)
+    file_path = "{}/{}.swift".format(directory, file_name)
+    with open(file_path, 'w+') as swift_file:
+        template_output = Template(template).render(upper_name=uppercase_first_letter(module.name),
+                                                    lower_name=lowercase_first_letter(module.name),
+                                                    upper_views=uppercase_views(module.views))
+        swift_file.write(template_output)
+
+
+def create_generic_file(directory, file_name, template):
+    file_path = "{}/{}".format(directory, file_name)
+    with open(file_path, 'w+') as generic_file:
+        generic_file.write(Template(template).render())
+
+
 # Create Presenter for this module
-def createPresenter(module):
-	createModuleFile(module,"{}Presenter".format(upcase_first_letter(module.name)),templateStrings.presenter)
+def create_presenter(module):
+    create_module_file(module, "{}Presenter".format(uppercase_first_letter(module.name)), templates.presenter)
+
+
 # Create Interactor for this module
-def createInteractor(module):
-	createModuleFile(module,"{}Interactor".format(upcase_first_letter(module.name)),templateStrings.interactor) 
+def create_interactor(module):
+    create_module_file(module, "{}Interactor".format(uppercase_first_letter(module.name)), templates.interactor)
+
+
 # Create wireframe from this module
-def createWireframe(module):
-	createModuleFile(module,"{}Wireframe".format(upcase_first_letter(module.name)),templateStrings.wireframe)
-# Create DataManager from this Module
-def createDataManager(module):
-	createModuleFile(module,"{}DataManager".format(upcase_first_letter(module.name)),templateStrings.datamanager)
+def create_wireframe(module):
+    create_module_file(module, "{}Wireframe".format(uppercase_first_letter(module.name)), templates.wireframe)
+
 
 # Create ViewController.swift file for each of the module's views.
-def createViews(module):
-	directory = "{}/ViewControllers".format(moduleDirectory(module))
-	for view in module.views:
-		fileString = "{}/{}{}ViewController.swift".format(directory, upcase_first_letter(module.name) ,upcase_first_letter(view))
-		with open(fileString, 'w+') as file:
-			template = Template(templateStrings.viewControllerTemplate)
-			file.write(template.render(upper_name=upcase_first_letter(module.name),upper_view=upcase_first_letter(view)))
-	# end for
+def create_views(module):
+    directory = "{}/ViewControllers".format(module_directory(module))
+    for view in module.views:
+        file_path = "{}/{}{}ViewController.swift".format(directory,
+                                                         uppercase_first_letter(module.name),
+                                                         uppercase_first_letter(view))
+        with open(file_path, 'w+') as view_controller_file:
+            template = Template(templates.view_controller_template)
+            view_controller_file.write(template.render(upper_name=uppercase_first_letter(module.name),
+                                                       upper_view=uppercase_first_letter(view)))
+
+
 # Create App Dependencies File
-def createAppDependencies(modules):
-	fileString = "{}AppDependencies.swift".format(cwd())  
-	with open(fileString, 'w+') as file:
-			template = Template(templateStrings.dependenciesTemplate)
-			file.write(template.render(lower_modules=lower_module_names(modules) ,upper_modules=upper_module_names(modules)))
+def create_app_dependencies(modules):
+    file_path = "{}/AppDependencies.swift".format(cwd())
+    with open(file_path, 'w+') as app_dependencies_file:
+        template = Template(templates.dependencies_template)
+        app_dependencies_file.write(template.render(lower_modules=lower_module_names(modules),
+                                                    upper_modules=upper_module_names(modules)))
+
+
 # Generate the Root Wire frame
-def createRootWireframe():
-	createGenericFile("{}/Common".format(cwd()),"RootWireFrame.swift",templateStrings.rootWireframe)
+def create_root_wireframe():
+    create_generic_file("{}/Common".format(cwd()), "RootWireFrame.swift", templates.root_wireframe)
+
+
 # create the storyboard file
-def createStoryboard(module):
-	createGenericFile(moduleDirectory(module),"{}.storyboard".format(module.name.capitalize()),templateStrings.storyboard)
+def create_storyboard(module):
+    create_generic_file(module_directory(module),
+                        "{}.storyboard".format(module.name.capitalize()),
+                        templates.storyboard)
 
-#### Main ####
+
 def main():
-	checkValidInput() # right now just checks number of arguments
-	jsonInput = getJSON() # get json from system args -> exits if not valid JSON
-	allModules = getModulesFromJson(jsonInput)
-	createDirectories(allModules) # all needed directories
-	if "--existing" in sys.argv:
-		printDependencies(allModules)
-	else:
-		createAppDependencies(allModules) # dependencies file
-		createRootWireframe() # root Wireframe
+    check_valid_input()  # right now just checks number of arguments
+    json_input = get_json()  # get json from system args -> exits if not valid JSON
+    all_modules = get_modules_from_json(json_input)
+    create_directories(all_modules)  # all needed directories
 
-	### Create All Module Files
-	for module in allModules:
-		createViews(module)
-		createPresenter(module)
-		createInteractor(module)
-		createWireframe(module)
-		createDataManager(module)
-		createStoryboard(module)
-	# end 
-	print("{} Files Created.".format(fileCount(allModules)))
+    if "--existing" in sys.argv:
+        print_dependencies(all_modules)
+    else:
+        create_app_dependencies(all_modules)  # dependencies file
+        create_root_wireframe()  # root Wireframe
+
+    # Create All Module Files
+    for module in all_modules:
+        create_views(module)
+        create_presenter(module)
+        create_interactor(module)
+        create_wireframe(module)
+        create_storyboard(module)
+    # end
+    print("{} Files Created.".format(file_count(all_modules)))
+
 
 if __name__ == "__main__":
     main()

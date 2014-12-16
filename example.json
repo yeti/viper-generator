@@ -1,5 +1,14 @@
 [
-{"ModuleName" : "Home", "Views" : ["ListView"]},
-{"ModuleName" : "CaptureClip", "Views" : ["EditClip","PlayClip"]},
-{"ModuleName" : "Snap", "Views" : ["Edit","Play"]}
- ]
+ {
+  "ModuleName": "Home",
+  "Views": ["ListView"]
+ },
+ {
+  "ModuleName": "CaptureClip",
+  "Views": ["EditClip", "PlayClip"]
+ },
+ {
+  "ModuleName": "Snap",
+  "Views": ["Edit", "Play"]
+ }
+]

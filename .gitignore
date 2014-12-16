@@ -1,3 +1,10 @@
 AppDependencies.swift
 /Common
 /Modules
+
+*.pyc
+*.pyo
+*.db
+.DS_Store
+.coverage
+.idea/
