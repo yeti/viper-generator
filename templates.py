@@ -108,7 +108,7 @@ class AppDependencies {
  
   func configureDependencies() {
     // Root Wireframe
-    let rootWire = RootWireFrame()
+    let rootWireFrame = RootWireFrame()
     {% for module in lower_modules %}
 
     // MARK: - {{ upper_modules[loop.index - 1] }} Module
@@ -121,7 +121,7 @@ class AppDependencies {
 
     // Instantiate wireframes
     {{ module }}Wireframe.presenter = {{ module }}Presenter
-    {{ module }}Wireframe.rootWireFrame = rootWire
+    {{ module }}Wireframe.rootWireFrame = rootWireFrame
     {% endfor %}
 
     //MARK: - Add Additional Module dependencies here
@@ -160,7 +160,7 @@ new_dependencies = '''
 
     // Instantiate wireframes
     {{  module }}Wireframe.presenter = {{ module }}Presenter
-    {{  module }}Wireframe.rootWireFrame = rootWire
+    {{  module }}Wireframe.rootWireFrame = rootWireFrame
 
  {% endfor %}
 
