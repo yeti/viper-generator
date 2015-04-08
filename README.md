@@ -18,7 +18,7 @@ pip install Jinja2
 ## Basic Usage
 Run the following command
 ```
-sudo python dependency_generator.py ./file.json /path/to/desired/directory --existing
+python dependency_generator.py ./file.json /path/to/desired/directory --existing
 ```
 where:
 
