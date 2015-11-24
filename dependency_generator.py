@@ -175,7 +175,7 @@ def create_app_dependencies(modules):
 
 # Generate the Root Wire frame
 def create_root_wireframe():
-    create_generic_file("{}/Common".format(cwd()), "RootWireFrame.swift", templates.root_wireframe)
+    create_generic_file("{}/Common".format(cwd()), "RootWireframe.swift", templates.root_wireframe)
 
 
 # create the storyboard file
