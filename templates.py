@@ -69,7 +69,7 @@ import UIKit
 
 class {{ upper_name }}Wireframe: NSObject {
 
-  var rootWireFrame: RootWireFrame!
+  var rootWireframe: RootWireframe!
   var presenter: {{ upper_name }}Presenter!
 
   {% for view in upper_views %}var {{ lower_name }}{{ view }}ViewController: {{ upper_name }}{{ view }}ViewController?
@@ -108,7 +108,7 @@ class AppDependencies {
  
   func configureDependencies() {
     // Root Wireframe
-    let rootWireFrame = RootWireFrame()
+    let rootWireframe = RootWireframe()
     {% for module in lower_modules %}
 
     // MARK: - {{ upper_modules[loop.index - 1] }} Module
@@ -121,7 +121,7 @@ class AppDependencies {
 
     // Instantiate wireframes
     {{ module }}Wireframe.presenter = {{ module }}Presenter
-    {{ module }}Wireframe.rootWireFrame = rootWireFrame
+    {{ module }}Wireframe.rootWireframe = rootWireframe
     {% endfor %}
 
     //MARK: - Add Additional Module dependencies here
@@ -160,7 +160,7 @@ new_dependencies = '''
 
     // Instantiate wireframes
     {{  module }}Wireframe.presenter = {{ module }}Presenter
-    {{  module }}Wireframe.rootWireFrame = rootWireFrame
+    {{  module }}Wireframe.rootWireframe = rootWireframe
 
  {% endfor %}
 
@@ -174,12 +174,12 @@ new_dependencies = '''
 
 root_wireframe = '''
 //
-//  RootWireFrame.swift
+//  RootWireframe.swift
 //
 
 import UIKit
 
-class RootWireFrame: NSObject {
+class RootWireframe: NSObject {
   
    // TODO: Add Initial View Controllers
 }
