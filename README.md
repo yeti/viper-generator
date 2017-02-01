@@ -28,9 +28,15 @@ where:
 
 ### JSON File
 The JSON file should outline the modules to be created in the script. For each module, you must supply a module name and the list of views in that module. The JSON file should 
-consist of a list of dictionaries. Each dictionary contains a "ModuleName" and an Array of Views. For example:
+consist of a list of dictionaries. Each dictionary contains a "ModuleName" and an Array of Views. 
+The first dictionary in the array should contain project information - the platform that you are generating code for (`ios` or `android`) and the Project Name.
+For example:
 ```
 [
+    {
+        "Platform": "android",
+        "Project": "Example Project"
+    }
     {
         "ModuleName": "Home", 
         "Views": ["List", "Friends"]

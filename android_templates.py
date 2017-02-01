@@ -44,12 +44,41 @@ public class {{ upper_module_name }}Module {
 activity = '''
 package com.{{ lower_project_name }}.{{ lower_module_name }};
 
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.{{ lower_project_name }}.ApplicationBase;
+
+import javax.inject.Inject;
 
 public class {{ upper_module_name }}Activity extends AppCompatActivity {
     private {{ upper_module_name }}Component m{{ upper_module_name }}Component;
 
-    // TODO: THIS IS INCOMPLETE
+    @Inject
+    {{ upper_module_name }}Presenter mPresenter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(com.{{ lower_project_name }}.R.layout.activity_{{ lower_module_name }});
+
+        mAssessmentComponent = DaggerAssessmentComponent.builder()
+                .applicationComponent(((ApplicationBase) getApplication()).getAppComponent())
+                .{{ lower_module_name }}Module(new {{ upper_module_name }}Module(this))
+                .build();
+        m{{ upper_module_name }}Component.inject(this);
+
+        mPresenter.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Make Presenter calls here
+
+    }
 }
 '''
 
@@ -63,7 +92,7 @@ import com.{{ lower_project_name }}.dependencies.ApplicationComponent;
 import dagger.Component;
 
 @ActivityScope
-@Component(dependencies = {{ upper_module_name }}Component.class, modules = { {{ upper_module_name }}Module.class })
+@Component(dependencies = ApplicationComponent.class, modules = { {{ upper_module_name }}Module.class })
 public interface {{ upper_module_name }}Component {
     void inject({{ upper_module_name }}Activity activity);
 }
@@ -171,5 +200,25 @@ public class {{ upper_fragment_name }}Fragment extends Fragment {
 '''
 
 
-# TODO: xml templates
-# Include note to move them out of directory and into the layouts directory after generation?
+# TODO: xml templates not currently being used
+# Also include note to move them out of directory and into the layouts directory after generation?
+activity_xml = '''
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_{{ lower_module_name }}"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.{{ lower_project_name }}.{{ lower_module_name }}.{{ upper_module_name }}Activity">
+
+</RelativeLayout>
+'''
+
+fragment_xml = '''
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+</RelativeLayout>
+'''

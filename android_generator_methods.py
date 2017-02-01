@@ -2,12 +2,34 @@
 from jinja2 import Template
 
 import android_templates
-from base_generator_methods import module_directory, uppercase_first_letter, lowercase_first_letter, uppercase_views
+from shared_generator_methods import module_directory, uppercase_first_letter, lowercase_first_letter, cwd, \
+    check_directory, create_generic_file
+
+
+def create_android_directories(modules):
+    current_dir = cwd()
+    check_directory(current_dir)
+    check_directory("{}/Modules".format(current_dir))
+    for module in modules:
+        check_directory("{}/Modules/{}".format(current_dir, lowercase_first_letter(module.name)))
+        check_directory("{}/Modules/{}/layouts".format(current_dir, uppercase_first_letter(module.name)))
 
 
 def create_java_file(project_name, module, file_name, template):
     directory = module_directory(module)
     file_path = "{}/{}.java".format(directory, file_name)
+    with open(file_path, 'w+') as java_file:
+        template_output = Template(template).render(lower_project_name=uppercase_first_letter(project_name),
+                                                    upper_project_name=uppercase_first_letter(project_name),
+                                                    lower_module_name=lowercase_first_letter(module.name),
+                                                    upper_module_name=uppercase_first_letter(module.name))
+
+        java_file.write(template_output)
+
+
+def create_xml_file(project_name, module, file_name, template):
+    directory = module_directory(module)
+    file_path = "{}/layouts/{}.xml".format(directory, file_name)
     with open(file_path, 'w+') as java_file:
         template_output = Template(template).render(lower_project_name=uppercase_first_letter(project_name),
                                                     upper_project_name=uppercase_first_letter(project_name),
@@ -33,12 +55,17 @@ def create_android_component(project_name, module):
                      template=android_templates.component)
 
 
-# Create Activity for this module
+# Create Activity and Activity XML for this module
 def create_android_activity(project_name, module):
     create_java_file(project_name=project_name,
                      module=module,
                      file_name="{}Activity".format(uppercase_first_letter(module.name)),
                      template=android_templates.activity)
+
+    create_xml_file(project_name=project_name,
+                    module=module,
+                    file_name="fragment_{}".format(lowercase_first_letter(module.name)),
+                    template=android_templates.fragment_xml)
 
 
 # Create Presenter for this module
@@ -70,3 +97,8 @@ def create_android_fragments(project_name, module):
                 upper_fragment_name=uppercase_first_letter(view))
 
             java_file.write(template_output)
+
+            create_xml_file(project_name=project_name,
+                            module=module,
+                            file_name="fragment_{}".format(lowercase_first_letter(view)),
+                            template=android_templates.fragment_xml)
