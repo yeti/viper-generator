@@ -1,8 +1,6 @@
 AppDependencies.swift
-/Common
-/Modules
 file.json
-
+/*
 *.pyc
 *.pyo
 *.db
