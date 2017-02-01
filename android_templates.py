@@ -63,7 +63,7 @@ public class {{ upper_module_name }}Activity extends AppCompatActivity {
 
         setContentView(com.{{ lower_project_name }}.R.layout.activity_{{ lower_module_name }});
 
-        mAssessmentComponent = DaggerAssessmentComponent.builder()
+        m{{ upper_module_name }}Component = Dagger{{ upper_module_name }}Component.builder()
                 .applicationComponent(((ApplicationBase) getApplication()).getAppComponent())
                 .{{ lower_module_name }}Module(new {{ upper_module_name }}Module(this))
                 .build();
@@ -128,7 +128,7 @@ public class {{ upper_module_name }}Presenter implements BasePresenter {
     private {{ upper_module_name }}Activity mActivity;
     private {{ upper_module_name }}Interactor mInteractor;
 
-    public {{ upper_module_name }}Presenter(AssessmentActivity activity, {{ upper_module_name }}Interactor interactor) {
+    public {{ upper_module_name }}Presenter({{ upper_module_name }}Activity activity, {{ upper_module_name }}Interactor interactor) {
         mActivity = activity;
         mInteractor = interactor;
     }
@@ -202,8 +202,7 @@ public class {{ upper_fragment_name }}Fragment extends Fragment {
 
 # TODO: xml templates not currently being used
 # Also include note to move them out of directory and into the layouts directory after generation?
-activity_xml = '''
-<?xml version="1.0" encoding="utf-8"?>
+activity_xml = '''<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_{{ lower_module_name }}"
     android:layout_width="match_parent"
@@ -214,8 +213,7 @@ activity_xml = '''
 </RelativeLayout>
 '''
 
-fragment_xml = '''
-<?xml version="1.0" encoding="utf-8"?>
+fragment_xml = '''<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent">

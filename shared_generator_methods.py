@@ -35,11 +35,6 @@ def cwd():
         return os.getcwd()
 
 
-# get the given module's directory
-def module_directory(module):
-    return "{}/Modules/{}".format(cwd(), module.name)
-
-
 def uppercase_first_letter(s):
     return s[0].upper() + s[1:]
 

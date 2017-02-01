@@ -1,7 +1,7 @@
 from jinja2 import Template
 
 import ios_templates
-from shared_generator_methods import cwd, check_directory, uppercase_first_letter, module_directory, \
+from shared_generator_methods import cwd, check_directory, uppercase_first_letter, \
     lowercase_first_letter, uppercase_views, create_generic_file, lower_module_names, upper_module_names
 
 
@@ -15,6 +15,11 @@ def create_ios_directories(modules):
     for module in modules:
         check_directory("{}/Modules/{}".format(current_dir, uppercase_first_letter(module.name)))
         check_directory("{}/Modules/{}/ViewControllers".format(current_dir, uppercase_first_letter(module.name)))
+
+
+# get the given module's directory
+def module_directory(module):
+    return "{}/Modules/{}".format(cwd(), module.name)
 
 
 # create base module file
