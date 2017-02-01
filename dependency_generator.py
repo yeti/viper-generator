@@ -8,6 +8,9 @@ import errno
 from jinja2 import Template
 
 # Globals
+from android_generator_methods import create_android_presenter, create_android_module, create_android_component, \
+    create_android_activity, create_android_interactor, create_android_fragments
+
 Module = namedtuple('Module', ['name', 'views'])  # Access attributes with dot syntax
 
 
@@ -24,9 +27,15 @@ def print_dependencies(modules):
         template.render(lower__modules=lower_module_names(modules), upper_modules=upper_module_names(modules))))
 
 
+def get_generator_from_json(json):
+    generator = json[0]
+    return generator
+
+
 # returns a list of Module tuples from given JSON
 def get_modules_from_json(json):
     mod_array = []
+    json.pop(0)  # Remove generator type from start of list
     for mod in json:
         val = Module(name=mod["ModuleName"], views=mod["Views"])
         mod_array.append(val)
@@ -119,6 +128,15 @@ def create_directories(modules):
         check_directory("{}/Modules/{}/ViewControllers".format(current_dir, uppercase_first_letter(module.name)))
 
 
+def create_android_directories(modules):
+    current_dir = cwd()
+    check_directory(current_dir)
+    check_directory("{}/Modules".format(current_dir))
+    for module in modules:
+        check_directory("{}/Modules/{}".format(current_dir, lowercase_first_letter(module.name)))
+        check_directory("{}/Modules/{}/layouts".format(current_dir, uppercase_first_letter(module.name)))
+
+
 # create base module file
 def create_module_file(module, file_name, template):
     directory = module_directory(module)
@@ -188,25 +206,54 @@ def create_storyboard(module):
 def main():
     check_valid_input()  # right now just checks number of arguments
     json_input = get_json()  # get json from system args -> exits if not valid JSON
+    generator = get_generator_from_json(json_input)  # Get generator type
     all_modules = get_modules_from_json(json_input)
-    create_directories(all_modules)  # all needed directories
 
-    if "--existing" in sys.argv:
-        print_dependencies(all_modules)
+    if generator["Generator"] == "android":
+        # TODO: Check if "Project" key exists
+        project_name = generator["Project"]
+        # TODO: Currently only works for preexisting projects
+        create_android_directories(all_modules)  # TODO: Merge with ios method?
+
+        # What to do with this?
+        # if "--existing" in sys.argv:
+        #     print_dependencies(all_modules)
+        # else:
+        #     create_app_dependencies(all_modules)  # dependencies file
+        #     create_root_wireframe()  # root Wireframe
+
+        # Create All Module Files
+        for module in all_modules:
+            create_android_module(project_name, module)
+            create_android_component(project_name, module)
+            create_android_activity(project_name, module)
+            create_android_presenter(project_name, module)
+            create_android_interactor(project_name, module)
+            create_android_fragments(project_name, module)
+        # Finished
+
+        pass
+    elif generator["Generator"] == "ios":
+        create_directories(all_modules)  # all needed directories
+
+        if "--existing" in sys.argv:
+            print_dependencies(all_modules)
+        else:
+            create_app_dependencies(all_modules)  # dependencies file
+            create_root_wireframe()  # root Wireframe
+
+        # Create All Module Files
+        for module in all_modules:
+            create_views(module)
+            create_presenter(module)
+            create_interactor(module)
+            create_wireframe(module)
+            create_storyboard(module)
+        # end
+        print("{} Files Created.".format(file_count(all_modules)))
     else:
-        create_app_dependencies(all_modules)  # dependencies file
-        create_root_wireframe()  # root Wireframe
-
-    # Create All Module Files
-    for module in all_modules:
-        create_views(module)
-        create_presenter(module)
-        create_interactor(module)
-        create_wireframe(module)
-        create_storyboard(module)
-    # end
-    print("{} Files Created.".format(file_count(all_modules)))
-
+        print "Invalid Generator type\n"
+        exit(1)
 
 if __name__ == "__main__":
     main()

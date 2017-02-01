@@ -1,0 +1,10 @@
+[
+    {
+        "Generator": "android",
+        "Project": "flexline"
+    },
+    {
+        "ModuleName": "Onboarding",
+        "Views": ["Login", "Signup"]
+    }
+]
