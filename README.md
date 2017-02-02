@@ -6,7 +6,7 @@ Script to generate models  and dependencies for Yeti's take on [VIPER](http://ww
 
 ## Installation
 Clone this project into a working directory.
-`git clone https://github.com/yeti/ios-dependency-generator.git`
+`git clone https://github.com/yeti/viper-generator.git`
 
 ## Dependencies
 The script requires the [Jinja2](http://jinja.pocoo.org/docs/dev/intro/) templating engine to create files. Jinja2 can be installed through either `easy_install` or `pip`
