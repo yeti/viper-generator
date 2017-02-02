@@ -18,27 +18,28 @@ Module = namedtuple('Module', ['name', 'views'])  # Access attributes with dot s
 # Functions
 def check_valid_input():
     if len(sys.argv) <= 1:
-        print "JSON file not provided\n"
+        print("JSON file not provided\n")
         exit(1)
 
 
 def print_dependencies(modules):
     template = Template(ios_templates.new_dependencies)
-    print "\n{}\n".format(file.write(
-        template.render(lower__modules=lower_module_names(modules), upper_modules=upper_module_names(modules))))
+    print("\n{}\n".format(file.write(
+        template.render(lower__modules=lower_module_names(modules), upper_modules=upper_module_names(modules)))))
 
 
 # Get Project info from given JSON
-def get_project_from_json(json):
-    project = Project(platform=json[0]["Platform"], name=json[0]["Project"])
+def get_project_from_json(json_input):
+    project_info = json_input[0]
+    project = Project(platform=project_info["Platform"], name=project_info["Project"])
     return project
 
 
 # returns a list of Module tuples from given JSON
-def get_modules_from_json(json):
+def get_modules_from_json(json_input):
     mod_array = []
-    json.pop(0)  # Remove generator type from start of list
-    for mod in json:
+    json_input.pop(0)  # Remove generator type from start of list
+    for mod in json_input:
         val = Module(name=mod["ModuleName"], views=mod["Views"])
         mod_array.append(val)
     return mod_array
@@ -107,7 +108,7 @@ def main():
         # end
         print("{} Files Created.".format(file_count(all_modules)))
     else:
-        print "Invalid Generator type\n"
+        print("Invalid Generator type\n")
         exit(1)
 
 if __name__ == "__main__":
