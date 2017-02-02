@@ -70,6 +70,11 @@ def create_android_activity(project_name, module):
                     file_name="activity_{}".format(lowercase_first_letter(module.name)),
                     template=android_templates.fragment_xml)
 
+    create_xml_file(project_name=project_name,
+                    module=module,
+                    file_name="{}_activity_update_for_android_manifest".format(lowercase_first_letter(module.name)),
+                    template=android_templates.update_android_manifest_xml)
+
 
 # Create Presenter for this module
 def create_android_presenter(project_name, module):

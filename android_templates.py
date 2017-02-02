@@ -199,9 +199,6 @@ public class {{ upper_fragment_name }}Fragment extends Fragment {
 }
 '''
 
-
-# TODO: xml templates not currently being used
-# Also include note to move them out of directory and into the layouts directory after generation?
 activity_xml = '''<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_{{ lower_module_name }}"
@@ -219,4 +216,12 @@ fragment_xml = '''<?xml version="1.0" encoding="utf-8"?>
     android:layout_width="match_parent" android:layout_height="match_parent">
 
 </RelativeLayout>
+'''
+
+update_android_manifest_xml = '''
+<!-- //////  COPY THE BELOW CODE AND PASTE INTO AndroidManifest.xml  ////// -->
+        <activity
+            android:name=".{{ lower_module_name }}.{{ upper_module_name }}Activity">
+        </activity>
+<!-- //////                                                          ////// -->
 '''
