@@ -182,7 +182,7 @@ public class {{ upper_fragment_name }}Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_login, container, false);
+        view = inflater.inflate(R.layout.fragment_{{ lower_fragment_name }}, container, false);
 
         mActivity = ({{ upper_module_name }}Activity) getActivity();
         mPresenter = mActivity.mPresenter;
