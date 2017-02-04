@@ -133,7 +133,6 @@ public class {{ upper_module_name }}Presenter implements BasePresenter {
         mInteractor = interactor;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
 

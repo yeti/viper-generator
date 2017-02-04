@@ -55,6 +55,25 @@ def upper_module_names(modules):
     return [uppercase_first_letter(module.name) for module in modules]
 
 
+# create all required directories for project
+def create_directories(platform, modules):
+    current_dir = cwd()
+    check_directory(current_dir)
+
+    if platform == "ios":
+        check_directory("{}/Modules".format(current_dir))
+        check_directory("{}/Common".format(current_dir))
+        check_directory("{}/Common/Models".format(current_dir))
+
+    for module in modules:
+        check_directory("{}/{}".format(current_dir, lowercase_first_letter(module.name)))
+        if platform == "ios":
+            check_directory("{}/Modules/{}".format(current_dir, uppercase_first_letter(module.name)))
+            check_directory("{}/Modules/{}/ViewControllers".format(current_dir, uppercase_first_letter(module.name)))
+        else:
+            check_directory("{}/{}/layouts".format(current_dir, uppercase_first_letter(module.name)))
+
+
 def create_generic_file(directory, file_name, template):
     file_path = "{}/{}".format(directory, file_name)
     with open(file_path, 'w+') as generic_file:
