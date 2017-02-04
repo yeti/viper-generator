@@ -1,20 +1,8 @@
 from jinja2 import Template
 
 import ios_templates
-from shared_generator_methods import cwd, check_directory, uppercase_first_letter, \
+from shared_generator_methods import cwd, uppercase_first_letter, \
     lowercase_first_letter, uppercase_views, create_generic_file, lower_module_names, upper_module_names
-
-
-# create all required directories for project
-def create_ios_directories(modules):
-    current_dir = cwd()
-    check_directory(current_dir)
-    check_directory("{}/Modules".format(current_dir))
-    check_directory("{}/Common".format(current_dir))
-    check_directory("{}/Common/Models".format(current_dir))
-    for module in modules:
-        check_directory("{}/Modules/{}".format(current_dir, uppercase_first_letter(module.name)))
-        check_directory("{}/Modules/{}/ViewControllers".format(current_dir, uppercase_first_letter(module.name)))
 
 
 # get the given module's directory

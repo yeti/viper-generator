@@ -2,16 +2,7 @@
 from jinja2 import Template
 
 import android_templates
-from shared_generator_methods import uppercase_first_letter, lowercase_first_letter, cwd, \
-    check_directory
-
-
-def create_android_directories(modules):
-    current_dir = cwd()
-    check_directory(current_dir)
-    for module in modules:
-        check_directory("{}/{}".format(current_dir, lowercase_first_letter(module.name)))
-        check_directory("{}/{}/layouts".format(current_dir, uppercase_first_letter(module.name)))
+from shared_generator_methods import uppercase_first_letter, lowercase_first_letter, cwd
 
 
 def get_module_directory(module):
